@@ -40,18 +40,70 @@ Download the latest script using the curl command above, then run:
 python3 velocity-install.py --update-console
 ```
 
-This signed update refreshes the console and service units, repairs ownership of
-the website-service socket directory, and checks the connection after restart.
-It preserves console access, admin accounts and website data. Services restart
-briefly; previous UI assets and unit files are retained, and restored if checks
-fail. The installed backend binaries must match this bundle; a changed backend
-requires the full release update procedure.
+This signed update refreshes the console, migration wizard and service units,
+repairs the website-service socket directory and website-file restore ownership,
+and checks the connection after restart. It preserves console access, admin
+accounts and website data. Services restart briefly; previous UI assets, unit
+files and any replaced helper binary are retained and restored if checks fail.
+Control/data binaries must match the bundle exactly. One explicitly recognized
+previous signed helper receives a compatible restore repair; other backend
+differences require the full release update procedure.
 
 Sites and Reverse Proxy include Add, Edit, Review, Publish and removal controls.
 Site tabs provide managed file editing/uploads/trash recovery, protection,
 certificates, page caching and PHP/database provisioning where applicable.
 Settings has Light, Dark and System themes, saved in the current browser.
 Backup operations show activity and successful, partial or failed outcomes.
+
+## Move to another VM
+
+On an existing evaluation VM, run `python3 velocity-install.py --update-console`
+after downloading the current installer to receive the console guide, service
+fixes and the compatible helper repair for website-file restore ownership.
+
+On the source and on a freshly installed destination VM, download the signed wizard:
+
+```bash
+curl -fsS https://raw.githubusercontent.com/mangyan1/velocity-downloads/main/install.py -o velocity-install.py
+python3 velocity-install.py --migrate
+```
+
+1. Choose **Export** on the source and select a new final snapshot or a previously
+   created backup. For a final snapshot, pause application writes, uploads and
+   background jobs first. New captures briefly stop the console/data plane, create
+   an encrypted backup and export its recovery key separately, then restart
+   previously running services. An existing backup excludes later changes and does
+   not stop the source. Transfer the directory securely over SSH/SFTP or protected storage;
+   protect the recovery-key file separately. Both VMs can be on different networks.
+2. Install the same Velocity version and required PHP/MariaDB packages on the new
+   VM. Choose **Restore**, then supply the transfer directory and original key.
+   The wizard checks the backup before replacing data, saves the destination's
+   initial database/key pair, restores configuration, offers destination listening-IP
+   replacements, provisions managed sites and
+   restores their files. A persistent service hold keeps the destination data plane
+   offline across reboots until activation. An interrupted site
+   restore can be retried by choosing Restore again.
+3. Restore website database dumps and match application credentials to the new
+   database accounts. Transfer or recreate referenced certificates, and review
+   private upstream addresses, trusted proxies, scheduled jobs and TCP/UDP firewall
+   rules. Then choose **Activate**. The wizard checks referenced TLS files and
+   verifies the running revision; test each website before switching DNS/proxy
+   traffic. Use your restored accounts to sign in.
+
+The Backups page includes a migration guide and separate control-database/file
+restore choices. Automatic restoration supports managed roots under
+`/srv/velocity-sites/HOSTNAME` and managed PHP sockets. Custom layouts require
+manual migration. Certificates, MariaDB data/credentials, external proxy services,
+OS packages and custom host configuration are not carried by the backup artifact.
+
+This is a planned snapshot transfer, not continuous live replication. Keep writes
+paused for the final cutover, or take a new final snapshot if the source has changed.
+Keep the old VM paused or forwarding to the new VM while DNS caches expire. Once
+the destination accepts writes, reverting to the source requires reconciliation.
+Migration reports and the destination's initial database/key safety pair stay
+locally under `/var/lib/velocity/migrations`; retain and protect them until recovery
+has been tested. Production release approval remains on hold.
+
 
 ## Open the console
 
