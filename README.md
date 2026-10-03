@@ -41,13 +41,19 @@ python3 velocity-install.py --update-console
 ```
 
 This signed update refreshes the console, migration wizard and service units,
-repairs the website-service socket directory and website-file restore ownership,
-and checks the connection after restart. It preserves console access, admin
-accounts and website data. Services restart briefly; previous UI assets, unit
-files and any replaced helper binary are retained and restored if checks fail.
-Control/data binaries must match the bundle exactly. One explicitly recognized
-previous signed helper receives a compatible restore repair; other backend
-differences require the full release update procedure.
+and applies recognized compatible credential-limit and website-file restore repairs.
+It preserves console access, accounts and website data. Services restart briefly;
+previous UI assets, unit files and any replaced binaries are retained and restored
+if checks fail. The data-plane binary must match exactly. Control/helper binaries
+must match or be explicitly recognized previous signed evaluation binaries; other
+backend differences require the full release update procedure.
+
+Usernames allow 1–20 characters; passwords allow 8–20 characters. Login and account
+creation enforce these limits in both the browser and backend, counting UTF-16
+units like HTML input fields. Before updating, ensure you have an admin account
+with supported credentials. Existing longer credentials will be rejected and are
+not silently truncated. Create a suitable admin account in the current console
+before updating if necessary.
 
 Sites and Reverse Proxy include Add, Edit, Review, Publish and removal controls.
 Site tabs provide managed file editing/uploads/trash recovery, protection,
@@ -59,7 +65,7 @@ Backup operations show activity and successful, partial or failed outcomes.
 
 On an existing evaluation VM, run `python3 velocity-install.py --update-console`
 after downloading the current installer to receive the console guide, service
-fixes and the compatible helper repair for website-file restore ownership.
+fixes and compatible credential-limit and website-file restore repairs.
 
 On the source and on a freshly installed destination VM, download the signed wizard:
 
