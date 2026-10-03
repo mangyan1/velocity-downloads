@@ -20,7 +20,8 @@ manifest signature against its pinned publisher key, verifies all artifact sizes
 and SHA-256 digests, then starts the interactive installer. No GitHub account,
 token, Rust, Node.js or source checkout is required. Network access is needed for
 downloads and Ubuntu runtime packages. You still need sudo access and choose
-your first Velocity admin password. Existing installations are refused.
+your first Velocity admin password. Fresh installation refuses existing deployments;
+use `--configure-access` to change console access instead.
 
 To download and verify without installing:
 
@@ -32,9 +33,27 @@ The verified files remain in your account under `~/.local/share/velocity-downloa
 Keep your download script from this official repository: its pinned key is the
 trust anchor, rather than a key supplied by an arbitrary download mirror.
 
-## Open the private console
+## Open the console
 
-From your workstation, replace the VM account/IP and keep this tunnel open:
+The installer offers two choices:
+
+- **Local only (default):** `127.0.0.1:8787`, accessible on the VM or through SSH.
+- **Other machines:** `0.0.0.0:8787`. Open **http://VM_IP:8787** using the VM's actual IP.
+  Allow TCP 8787 from intended clients in your VM/network firewall. The console
+  uses HTTP; use a trusted LAN or put an HTTPS reverse proxy in front of it.
+
+To switch an existing installation, download the current script above and run:
+
+```bash
+python3 velocity-install.py --configure-access
+```
+
+This restarts only the console, verifies its listener and health, and restores the
+previous setting on failure. It preserves your installation, admin and data.
+The access setting survives service restarts and release updates. Website ports
+remain independent.
+
+For local access from your workstation, replace the VM account/IP and keep this tunnel open:
 
 ```bash
 ssh -N -L 127.0.0.1:8787:127.0.0.1:8787 vm-user@VM_IP
