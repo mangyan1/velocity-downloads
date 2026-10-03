@@ -20,8 +20,7 @@ manifest signature against its pinned publisher key, verifies all artifact sizes
 and SHA-256 digests, then starts the interactive installer. No GitHub account,
 token, Rust, Node.js or source checkout is required. Network access is needed for
 downloads and Ubuntu runtime packages. You still need sudo access and choose
-your first Velocity admin password. Fresh installation refuses existing deployments;
-use `--configure-access` to change console access instead.
+your first Velocity admin password. Fresh installation refuses existing deployments. Existing VMs can update the console or change its access as described below.
 
 To download and verify without installing:
 
@@ -32,6 +31,27 @@ python3 velocity-install.py --verify-only
 The verified files remain in your account under `~/.local/share/velocity-downloads`.
 Keep your download script from this official repository: its pinned key is the
 trust anchor, rather than a key supplied by an arbitrary download mirror.
+
+## Update an existing compatible evaluation VM
+
+Download the latest script using the curl command above, then run:
+
+```bash
+python3 velocity-install.py --update-console
+```
+
+This signed update refreshes the console and service units, repairs ownership of
+the website-service socket directory, and checks the connection after restart.
+It preserves console access, admin accounts and website data. Services restart
+briefly; previous UI assets and unit files are retained, and restored if checks
+fail. The installed backend binaries must match this bundle; a changed backend
+requires the full release update procedure.
+
+Sites and Reverse Proxy include Add, Edit, Review, Publish and removal controls.
+Site tabs provide managed file editing/uploads/trash recovery, protection,
+certificates, page caching and PHP/database provisioning where applicable.
+Settings has Light, Dark and System themes, saved in the current browser.
+Backup operations show activity and successful, partial or failed outcomes.
 
 ## Open the console
 

@@ -13,13 +13,14 @@ import urllib.parse
 import urllib.request
 
 # Set by the publisher when exporting the public bootstrap script.
-RELEASE_URL = 'https://github.com/mangyan1/velocity-downloads/releases/download/evaluation-20261003-c44580a'
+RELEASE_URL = 'https://github.com/mangyan1/velocity-downloads/releases/download/evaluation-20261003-a3cac32'
 TRUSTED_PUBLIC_KEY = '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAOtk6UKxjda7Kx886s76j3SgUN7tQmGEi9J/RFbZiMTM=\n-----END PUBLIC KEY-----\n'
 EXPECTED_FILES = {
     "velocityd", "velocity-control", "velocity-helper", "velocity-ui.tar.gz", "velocity.cdx.json",
     "packaging/installer.sh", "packaging/verify_release.py", "packaging/evaluation_release.py",
     "packaging/install_bundle.sh", "packaging/systemd/velocityd.service",
     "packaging/console_access.py",
+    "packaging/console_update.py",
     "packaging/systemd/velocity-control.service", "packaging/systemd/velocity-helper.service",
 }
 
@@ -88,10 +89,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--verify-only", action="store_true", help="download and verify without installing")
     parser.add_argument("--configure-access", action="store_true", help="change console access on an existing installation")
+    parser.add_argument("--update-console", action="store_true", help="update console assets and service units on a compatible installed evaluation VM")
     parser.add_argument("--output", type=Path, help="new directory in which to retain verified files")
     args = parser.parse_args()
-    if args.verify_only and args.configure_access:
-        parser.error("Choose --verify-only or --configure-access")
+    if sum((args.verify_only, args.configure_access, args.update_console)) > 1:
+        parser.error("Choose one of --verify-only, --configure-access or --update-console")
     if not RELEASE_URL or not TRUSTED_PUBLIC_KEY:
         parser.error("Use the configured installer from mangyan1/velocity-downloads")
     if not shutil.which("openssl"):
@@ -113,6 +115,8 @@ def main():
             command = ["bash", str(output / "packaging/install_bundle.sh"), str(key)]
             if args.configure_access:
                 command.append("--configure-access")
+            if args.update_console:
+                command.append("--update-console")
             subprocess.run(command, check=True)
     except (ValueError, OSError, KeyError, TypeError, subprocess.CalledProcessError) as error:
         parser.exit(1, f"Download/install stopped: {error}\n")
