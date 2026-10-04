@@ -61,6 +61,23 @@ certificates, page caching and PHP/database provisioning where applicable.
 Settings has Light, Dark and System themes, saved in the current browser.
 Backup operations show activity and successful, partial or failed outcomes.
 
+## Switch HTTP/3 on Velocity
+
+After updating, open **Settings → Deployment mode → HTTP/3 over QUIC**.
+Select an existing HTTPS listener and flip **Enable HTTP/3 on this listener**.
+The switch validates the change, shows progress and checks the actual running UDP
+listener before reporting success. Shared and dedicated website ports are
+supported, including 8443, 7443, 7442 and 44301. HTTPS/TCP remains available.
+An administrator, a connected data service and an existing HTTPS certificate are
+required. Firewall rules remain separately managed; restrict UDP access to
+intended clients or the exact proxy VM IP.
+
+This controls Velocity only and leaves NPMplus untouched. Public HTTP/3 on
+NPMplus controls visitor connections; its normal nginx proxy hosts connect to
+Velocity over TCP. Enabling this switch does not make that upstream hop use QUIC.
+HTTP/3 between the VMs requires a proxy with HTTP/3 upstream support. See
+[nginx upstream protocols](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_http_version).
+
 ## Move to another VM
 
 On an existing evaluation VM, run `python3 velocity-install.py --update-console`
