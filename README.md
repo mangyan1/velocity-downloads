@@ -41,7 +41,8 @@ python3 velocity-install.py --update-console
 ```
 
 This signed update refreshes the console, migration wizard and service units,
-and applies recognized compatible credential-limit and website-file restore repairs.
+and applies recognized compatible credential-limit, website-file restore and
+console workflow updates.
 It preserves console access, accounts and website data. Services restart briefly;
 previous UI assets, unit files and any replaced binaries are retained and restored
 if checks fail. The data-plane binary must match exactly. Control/helper binaries
@@ -60,6 +61,28 @@ Site tabs provide managed file editing/uploads/trash recovery, protection,
 certificates, page caching and PHP/database provisioning where applicable.
 Settings has Light, Dark and System themes, saved in the current browser.
 Backup operations show activity and successful, partial or failed outcomes.
+
+## Website operations
+
+Open **Sites → your website**. **Applications & staging** installs a chosen
+WordPress version on a prepared managed PHP/MariaDB website, or copies content
+to a separate prepared destination. Pause writes for a consistent staging copy;
+review application URLs afterward. Complete WordPress setup through its website.
+
+**Scheduled jobs** adds, edits, pauses, removes and manually submits website
+tasks through preview and publish. Schedules use UTC; executable arguments are
+passed directly without a shell. Inspect run history and outcome details to
+check completion. A queued or accepted run is not a completed task.
+
+**Runtime → Prepare this website** prepares only the selected site's managed
+identity, PHP pool and declared database. Install PHP-FPM/MariaDB packages first.
+**Edit site** exposes PHP worker limits, installed extensions, PHP overrides
+and request-body limits. Administrators manage these settings.
+
+Identity & Access separates users, MFA, sessions, tokens, SSH/SFTP and login
+events into tabs, showing your effective role and MFA state. Overview and website
+tabs explain unavailable readings. Traffic/cache counters remain server-wide;
+website Logs show attributed system/security events, not full HTTP access logs.
 
 ## Switch HTTP/3 on Velocity
 
