@@ -191,3 +191,24 @@ backup/restore and the supported update process before any production deployment
 
 The public repository contains only download/bootstrap files and evaluation
 release assets. It does not publish backend source or development reports.
+
+## Website file permissions and backup completeness
+
+Managed website files use the site's owner and the `velocity` read group.
+Updating fixes writes, trash restore, archive extraction, WordPress installation
+and staging copies. **Sites → your website → Settings → Prepare this website**
+repairs older managed content assigned to the site's private group, preserving
+permissions and private operational files. Preparation also reports the actual
+PHP/runtime provisioning failure, such as a missing PHP-FPM package.
+
+On Ubuntu 24.04, install PHP before preparing a PHP/WordPress website:
+
+```bash
+sudo apt-get install -y php8.3-fpm php8.3-cli php8.3-mysql php8.3-curl php8.3-gd php8.3-mbstring php8.3-xml php8.3-zip
+```
+
+New backups refuse missing/unreadable website content instead of reporting
+success while omitting it. Verify older backups and check their included sites
+before restoring. MariaDB application databases still require separate recovery.
+Production approval remains on hold; this is an evaluation update.
+
