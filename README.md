@@ -196,7 +196,7 @@ release assets. It does not publish backend source or development reports.
 
 Managed website files use the site's owner and the `velocity` read group.
 Updating fixes writes, trash restore, archive extraction, WordPress installation
-and staging copies. **Sites → your website → Settings → Prepare this website**
+and staging copies. **Sites → your website → Runtime → Prepare this website**
 repairs older managed content assigned to the site's private group, preserving
 permissions and private operational files. Preparation also reports the actual
 PHP/runtime provisioning failure, such as a missing PHP-FPM package.
@@ -212,3 +212,26 @@ success while omitting it. Verify older backups and check their included sites
 before restoring. MariaDB application databases still require separate recovery.
 Production approval remains on hold; this is an evaluation update.
 
+
+## Compact console dashboards
+
+Management pages group their tools into focused tabs. Main actions stay at the
+top; tables and findings have pagination instead of long inventories.
+
+- **Settings:** Network & HTTPS, Appearance, Diagnostics and Maintenance.
+- **Backups:** Artifacts, Verify & restore, Migration and Storage & keys.
+  Select an artifact to open its recovery controls.
+- **Reverse Proxy:** Routes, Upstream health, Traffic path and Exposure.
+  Select a route to inspect its settings or edit it.
+- **Deployments:** Running configuration, History and Network & HTTPS.
+- **Overview:** Traffic & resources, Security & recovery and Recent activity.
+
+Security, Firewall, Exposure, Optimizer and Changes use the same focused layout.
+Forms retain their values when switching dashboard sections. On phones, content
+flows vertically and wide tables can scroll horizontally. Review and typed
+confirmation requirements still apply to configuration changes and recovery.
+
+Update an existing compatible evaluation installation with the current public
+installer and `python3 velocity-install.py --update-console`. The update preserves
+console accounts, listeners and website configuration. Production approval
+remains on hold.
