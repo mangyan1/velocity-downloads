@@ -238,8 +238,27 @@ remains on hold.
 
 ## Recover a forgotten console password
 
-To recover a forgotten console password, first install the current evaluation
-update. Run this on the Velocity VM; replace `admin` if you chose another username:
+**Prepare browser recovery:** after installing or updating, sign in and open
+**Identity & Access → Account recovery**. Confirm your current password and,
+when enabled, your authenticator code. Generate a recovery code, download or copy
+it, and save it privately outside this VM. The overview reminds you until a code
+has been generated. Each account manages its own code.
+
+**Forgot your username or password?** Choose **Forgot username or password?** on
+the login page. Enter your saved code, then enter and confirm a new 8–20 character
+password. Recovery displays your username so you can sign in again. It preserves
+MFA, roles, websites and other users, and revokes the recovered account's sessions
+and API tokens. Generate a new recovery code after signing in.
+
+Codes work once, have no automatic expiry, and are invalidated when replaced,
+removed or used, or when an administrator resets the password locally. Only a
+hash is stored; the raw code is shown once and never saved in browser storage.
+This authenticated-by-code recovery works wherever the console is reachable;
+it has no LAN-only bypass. Use HTTPS for remote console access.
+
+**Without a saved code:** an authorized operator can recover from the VM
+terminal. First install the current evaluation update; replace `admin` below
+with your existing username:
 
 ```bash
 sudo -v
@@ -252,9 +271,9 @@ sudo -v
 
 The password prompts are hidden. Recovery updates only the existing account,
 revokes its sessions and API tokens, and records an audit event in one transaction.
-It preserves MFA, roles, website configuration and other users. Restarting the
-control service prevents concurrent sign-ins and clears previous login rate limits;
-the website service keeps
-running. Recovery prompts for a hidden password and confirmation on a terminal;
+It preserves MFA, roles, website configuration and other users. Stopping the
+control service prevents concurrent sign-ins; restarting clears previous login
+rate limits. The website service keeps running. Recovery prompts for a hidden
+password and confirmation on a terminal;
 automation can supply it through stdin. It never accepts the password as a
 command-line argument, and refuses missing accounts or databases.
