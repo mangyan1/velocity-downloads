@@ -13,7 +13,7 @@ import urllib.parse
 import urllib.request
 
 # Set by the publisher when exporting the public bootstrap script.
-RELEASE_URL = 'https://github.com/mangyan1/velocity-downloads/releases/download/evaluation-20261007-2f14a73'
+RELEASE_URL = 'https://github.com/mangyan1/velocity-downloads/releases/download/evaluation-20261007-d43cdb2'
 TRUSTED_PUBLIC_KEY = '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAOtk6UKxjda7Kx886s76j3SgUN7tQmGEi9J/RFbZiMTM=\n-----END PUBLIC KEY-----\n'
 EXPECTED_FILES = {
     "velocityd", "velocity-control", "velocity-helper", "velocity-ui.tar.gz", "velocity.cdx.json",

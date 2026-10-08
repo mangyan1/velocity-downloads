@@ -235,3 +235,26 @@ Update an existing compatible evaluation installation with the current public
 installer and `python3 velocity-install.py --update-console`. The update preserves
 console accounts, listeners and website configuration. Production approval
 remains on hold.
+
+## Recover a forgotten console password
+
+To recover a forgotten console password, first install the current evaluation
+update. Run this on the Velocity VM; replace `admin` if you chose another username:
+
+```bash
+sudo -v
+(
+  trap 'sudo systemctl start velocity-control' EXIT
+  sudo systemctl stop velocity-control &&
+  sudo -u velocity env VELOCITY_DB_PATH=/var/lib/velocity/velocity.db /usr/bin/velocity-control --reset-password admin
+)
+```
+
+The password prompts are hidden. Recovery updates only the existing account,
+revokes its sessions and API tokens, and records an audit event in one transaction.
+It preserves MFA, roles, website configuration and other users. Restarting the
+control service prevents concurrent sign-ins and clears previous login rate limits;
+the website service keeps
+running. Recovery prompts for a hidden password and confirmation on a terminal;
+automation can supply it through stdin. It never accepts the password as a
+command-line argument, and refuses missing accounts or databases.
