@@ -13,7 +13,7 @@ import urllib.parse
 import urllib.request
 
 # Set by the publisher when exporting the public bootstrap script.
-RELEASE_URL = 'https://github.com/mangyan1/velocity-downloads/releases/download/evaluation-20261007-dabe2f6'
+RELEASE_URL = 'https://github.com/mangyan1/velocity-downloads/releases/download/evaluation-20261009-c09db12'
 TRUSTED_PUBLIC_KEY = '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAOtk6UKxjda7Kx886s76j3SgUN7tQmGEi9J/RFbZiMTM=\n-----END PUBLIC KEY-----\n'
 EXPECTED_FILES = {
     "velocityd", "velocity-control", "velocity-helper", "velocity-ui.tar.gz", "velocity.cdx.json",
@@ -23,6 +23,10 @@ EXPECTED_FILES = {
     "packaging/console_update.py",
     "packaging/migrate.py",
     "packaging/systemd/velocity-control.service", "packaging/systemd/velocity-helper.service",
+    "packaging/updater.py",
+    "packaging/systemd/velocity-updater.service", "packaging/systemd/velocity-updater-check.service",
+    "packaging/systemd/velocity-updater.timer", "packaging/systemd/velocity-update-recovery.service",
+    "packaging/systemd/velocity-upload-scanner.service",
 }
 
 
@@ -90,7 +94,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--verify-only", action="store_true", help="download and verify without installing")
     parser.add_argument("--configure-access", action="store_true", help="change console access on an existing installation")
-    parser.add_argument("--update-console", action="store_true", help="update console/service units and recognized compatible credential/restore repairs on an evaluation VM")
+    parser.add_argument("--update-console", action="store_true", help="update the installed evaluation engine, console and helper through signed verification, backup and rollback")
     parser.add_argument("--migrate", action="store_true", help="guided export, restore and activation on an installed evaluation VM")
     parser.add_argument("--output", type=Path, help="new directory in which to retain verified files")
     args = parser.parse_args()

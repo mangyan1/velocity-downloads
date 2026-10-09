@@ -40,14 +40,29 @@ Download the latest script using the curl command above, then run:
 python3 velocity-install.py --update-console
 ```
 
-This signed update refreshes the console, migration wizard and service units,
-and applies recognized compatible credential-limit, website-file restore and
-console workflow updates.
-It preserves console access, accounts and website data. Services restart briefly;
-previous UI assets, unit files and any replaced binaries are retained and restored
-if checks fail. The data-plane binary must match exactly. Control/helper binaries
-must match or be explicitly recognized previous signed evaluation binaries; other
-backend differences require the full release update procedure.
+The historical `--update-console` flag now updates the complete signed evaluation
+release: website engine, console, helper, frontend and matching service units.
+It bootstraps updater tools on older test VMs, stages and smoke-tests the signed
+candidate, takes a recovery snapshot, then promotes and verifies the running
+release. Failed activation restores the previous release and control database
+and verifies recovery. Accounts, published configuration, website content and
+the selected console listener are retained. Services restart briefly.
+
+Take a VM snapshot first. The engine recovery snapshot does not cover website
+writes, application/MariaDB databases, OS packages or custom host settings.
+This command does not enable scheduled automatic updates. Download the current
+script again each time: older copies stay pinned to an older release.
+
+After updating, refresh the console with Ctrl+Shift+R. For every existing PHP,
+WordPress or Laravel website, run **Prepare website resources** once to regenerate
+its pool unit with the shared-socket directory preservation fix. Check each website.
+
+To check the result:
+
+```bash
+sudo systemctl is-active velocity-helper velocityd velocity-control
+sudo python3 /usr/lib/velocity/updater.py status
+```
 
 Usernames allow 1–20 characters; passwords allow 8–20 characters. Login and account
 creation enforce these limits in both the browser and backend, counting UTF-16
@@ -104,8 +119,8 @@ HTTP/3 between the VMs requires a proxy with HTTP/3 upstream support. See
 ## Move to another VM
 
 On an existing evaluation VM, run `python3 velocity-install.py --update-console`
-after downloading the current installer to receive the console guide, service
-fixes and compatible credential-limit and website-file restore repairs.
+after downloading the current installer to receive the complete signed evaluation
+release, including the website engine and current migration wizard.
 
 On the source and on a freshly installed destination VM, download the signed wizard:
 
@@ -277,3 +292,24 @@ rate limits. The website service keeps running. Recovery prompts for a hidden
 password and confirmation on a terminal;
 automation can supply it through stdin. It never accepts the password as a
 command-line argument, and refuses missing accounts or databases.
+
+## Website engine and virtual host configuration
+
+Administrators can open **Sites → website → Settings → Edit raw configuration**
+to edit a selected website's complete native Velocity JSON. Static sites and
+SPAs, PHP/WordPress/Laravel, HTTP reverse proxies and managed Node, Python, Ruby,
+Java, .NET and native applications use the same editor. It validates configuration,
+shows the changed fields, requires confirmation and refuses stale edits. It does
+not interpret Nginx, Apache, LiteSpeed or `.htaccess` syntax or install runtimes.
+
+Restart now restores published public listeners without the empty startup
+loopback socket blocking the same port. The installer accepts an existing public
+website listener only when Velocity owns it. Failed activation retains the old
+release and verifies recovery. PHP pool preparation installs the fix that keeps
+other websites' sockets when one pool restarts or stops.
+
+The release also includes the website upload safeguards and administrator upload
+limit controls. Uploads fail closed until ClamAV has loaded its signature database;
+the installer prepares its dedicated scanner and narrow AppArmor configuration.
+Use independent website/database backups and a VM snapshot for evaluation updates.
+This testing release does not establish LiteSpeed performance parity or production approval.
