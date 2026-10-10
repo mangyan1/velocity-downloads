@@ -313,3 +313,30 @@ limit controls. Uploads fail closed until ClamAV has loaded its signature databa
 the installer prepares its dedicated scanner and narrow AppArmor configuration.
 Use independent website/database backups and a VM snapshot for evaluation updates.
 This testing release does not establish LiteSpeed performance parity or production approval.
+
+## Upload a complete website folder
+
+The current evaluation console accepts **Choose folder** and recursive folder
+drops in **Sites → website → Files → Upload files**. A single folder contributes
+its contents to the current website directory, preserving nested paths; several
+dropped folders retain their root names. Check the displayed destinations first.
+Selections are bounded to 20,000 files and 64 nested levels; empty directories
+are omitted, and large queues show 20 files per page. Selection replaces the queue.
+
+Upload progress stays inside the dialog, which fits desktop and narrow screens.
+Bytes sent and waiting for scan/save confirmation are shown separately; a file is
+only marked Uploaded after server success. Failed paths retain their errors and
+retry skips confirmed successful files. Timeout outcomes require checking the
+file list before retrying. Each file still needs its clean malware verdict, size
+checks and any administrator acknowledgement for code or sensitive paths.
+Folder publication is per file, not an atomic whole-site deployment.
+
+A Node CMS needs a **Reverse proxy** website with **Run a managed application on
+this server**, runtime **Node**, its entrypoint (such as `server.js`), and a local
+HTTP port. Upload its complete package, configure its production environment and
+HTTPS, then use **Applications & staging → Deploy**. Node must be installed.
+Static serving does not start a CMS and can expose its application files.
+
+Update through the existing anonymous `--update-console` command shown above,
+then refresh the browser with Ctrl+Shift+R. No additional upload firewall port or
+GitHub login is required on the VM.
