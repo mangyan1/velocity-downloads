@@ -18,9 +18,17 @@ python3 velocity-install.py
 The script downloads the prebuilt binaries and web console, checks the Ed25519
 manifest signature against its pinned publisher key, verifies all artifact sizes
 and SHA-256 digests, then starts the interactive installer. No GitHub account,
-token, Rust, Node.js or source checkout is required. Network access is needed for
+token, Rust or source checkout is required. Node and other selected website
+runtimes are installed automatically. Network access is needed for
 downloads and Ubuntu runtime packages. You still need sudo access and choose
 your first Velocity admin password. Fresh installation refuses existing deployments. Existing VMs can update the console or change its access as described below.
+
+Fresh installs default to PHP-FPM/WordPress extensions and Composer, Node/npm,
+Python/venv/pip, Ruby/Bundler, Java, .NET/ASP.NET Core and MariaDB. Choose `static`
+or a comma-separated selection for a smaller server. Updates retain the saved
+selection; older VMs without a selection receive this default set. See
+[website runtime dependencies](website-runtime-dependencies.md) for versions,
+profile choices, installation verification and project-specific requirements.
 
 To download and verify without installing:
 
@@ -90,7 +98,8 @@ passed directly without a shell. Inspect run history and outcome details to
 check completion. A queued or accepted run is not a completed task.
 
 **Runtime → Prepare this website** prepares only the selected site's managed
-identity, PHP pool and declared database. Install PHP-FPM/MariaDB packages first.
+identity, PHP pool and declared database. The default installer supplies the
+PHP-FPM/MariaDB dependencies; smaller selections must include the needed profiles.
 **Edit site** exposes PHP worker limits, installed extensions, PHP overrides
 and request-body limits. Administrators manage these settings.
 
@@ -197,7 +206,9 @@ Settings selects direct or behind-proxy mode and shared interfaces/ports.
 Each site's Settings supports dedicated HTTP/HTTPS ports; its files inherit that
 port. HTTP/3 requires HTTPS with a certificate trusted by clients and UDP access
 on the chosen port, alongside TCP fallback. Configure an external edge separately.
-PHP runtimes/pools are provisioned separately; MariaDB is an optional install prompt.
+Website runtimes are installed and verified by the signed installer; PHP pools
+and application databases are prepared separately per website. MariaDB is in
+the default hosting selection.
 
 Local backups use `/var/lib/velocity/backups`; protect an independent off-VM copy
 of `/var/lib/velocity/keys/master.key`. S3 and external CA services are optional.
@@ -216,10 +227,11 @@ repairs older managed content assigned to the site's private group, preserving
 permissions and private operational files. Preparation also reports the actual
 PHP/runtime provisioning failure, such as a missing PHP-FPM package.
 
-On Ubuntu 24.04, install PHP before preparing a PHP/WordPress website:
+If a smaller installation excluded PHP, download the latest bootstrap and add
+the needed profiles before preparing a PHP/WordPress website:
 
 ```bash
-sudo apt-get install -y php8.3-fpm php8.3-cli php8.3-mysql php8.3-curl php8.3-gd php8.3-mbstring php8.3-xml php8.3-zip
+python3 velocity-install.py --update-console --runtimes php,node,mariadb
 ```
 
 New backups refuse missing/unreadable website content instead of reporting
@@ -334,7 +346,8 @@ Folder publication is per file, not an atomic whole-site deployment.
 A Node CMS needs a **Reverse proxy** website with **Run a managed application on
 this server**, runtime **Node**, its entrypoint (such as `server.js`), and a local
 HTTP port. Upload its complete package, configure its production environment and
-HTTPS, then use **Applications & staging → Deploy**. Node must be installed.
+HTTPS, then use **Applications & staging → Deploy**. The default installer adds
+Node/npm; verify that its version satisfies the application's requirements.
 Static serving does not start a CMS and can expose its application files.
 
 Update through the existing anonymous `--update-console` command shown above,
@@ -346,7 +359,7 @@ GitHub login is required on the VM.
 ZIP uploads store the archive; they do not automatically extract or deploy it.
 ZIP extraction is not implemented in the console. Extract on your device, then
 use **Choose folder** for the website contents. A Node CMS requires an installed
-Node runtime and a managed Node reverse-proxy website with the correct entrypoint;
+Node runtime (installed by default) and a managed Node reverse-proxy website with the correct entrypoint;
 serving only the uploaded ZIP as a static website does not start the application.
 The upload dialog displays this distinction when selecting a ZIP.
 

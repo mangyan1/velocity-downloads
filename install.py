@@ -13,11 +13,12 @@ import urllib.parse
 import urllib.request
 
 # Set by the publisher when exporting the public bootstrap script.
-RELEASE_URL = 'https://github.com/mangyan1/velocity-downloads/releases/download/evaluation-20261009-25b189b'
+RELEASE_URL = 'https://github.com/mangyan1/velocity-downloads/releases/download/evaluation-20261009-6bdff0f'
 TRUSTED_PUBLIC_KEY = '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAOtk6UKxjda7Kx886s76j3SgUN7tQmGEi9J/RFbZiMTM=\n-----END PUBLIC KEY-----\n'
 EXPECTED_FILES = {
     "velocityd", "velocity-control", "velocity-helper", "velocity-ui.tar.gz", "velocity.cdx.json",
     "packaging/installer.sh", "packaging/verify_release.py", "packaging/evaluation_release.py",
+    "packaging/runtimes.py",
     "packaging/install_bundle.sh", "packaging/systemd/velocityd.service",
     "packaging/console_access.py",
     "packaging/console_update.py",
@@ -97,9 +98,12 @@ def main():
     parser.add_argument("--update-console", action="store_true", help="update the installed evaluation engine, console and helper through signed verification, backup and rollback")
     parser.add_argument("--migrate", action="store_true", help="guided export, restore and activation on an installed evaluation VM")
     parser.add_argument("--output", type=Path, help="new directory in which to retain verified files")
+    parser.add_argument("--runtimes", help="website dependencies: all (initial default), static, or comma-separated php,node,python,ruby,java,dotnet,mariadb; updates retain the saved choice")
     args = parser.parse_args()
     if sum((args.verify_only, args.configure_access, args.update_console, args.migrate)) > 1:
         parser.error("Choose one of --verify-only, --configure-access, --update-console or --migrate")
+    if args.runtimes and (args.verify_only or args.configure_access or args.migrate):
+        parser.error("--runtimes applies only to installation or --update-console")
     if not RELEASE_URL or not TRUSTED_PUBLIC_KEY:
         parser.error("Use the configured installer from mangyan1/velocity-downloads")
     if not shutil.which("openssl"):
@@ -125,6 +129,8 @@ def main():
                 command.append("--update-console")
             if args.migrate:
                 command.append("--migrate")
+            if args.runtimes:
+                command.extend(["--runtimes", args.runtimes])
             subprocess.run(command, check=True)
     except (ValueError, OSError, KeyError, TypeError, subprocess.CalledProcessError) as error:
         parser.exit(1, f"Download/install stopped: {error}\n")
