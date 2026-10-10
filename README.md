@@ -340,3 +340,30 @@ Static serving does not start a CMS and can expose its application files.
 Update through the existing anonymous `--update-console` command shown above,
 then refresh the browser with Ctrl+Shift+R. No additional upload firewall port or
 GitHub login is required on the VM.
+
+## Upload diagnostics and ZIP deployment
+
+ZIP uploads store the archive; they do not automatically extract or deploy it.
+ZIP extraction is not implemented in the console. Extract on your device, then
+use **Choose folder** for the website contents. A Node CMS requires an installed
+Node runtime and a managed Node reverse-proxy website with the correct entrypoint;
+serving only the uploaded ZIP as a static website does not start the application.
+The upload dialog displays this distinction when selecting a ZIP.
+
+Failed uploads show a **Diagnostic ID**, byte counts and elapsed seconds. The
+control plane and helper record the same ID and processing phase. The helper logs
+a waiting record every 15 seconds, separating receiving/staging, storage
+accounting, scanner activity and atomic publication. HTTP 504 responses identify
+the stalled control-plane phase. Diagnostics do not log file contents, passwords
+or authorization headers. Error details may include filesystem paths.
+
+Collect an attempt's logs after updating and refreshing the console:
+
+```bash
+sudo journalctl -u velocity-control -u velocity-helper -u velocity-upload-scanner --since "15 minutes ago" --no-pager -o short-iso
+```
+
+Match the Diagnostic ID from the failed file to the control/helper records.
+Check the file list before retrying a timeout because saving may have completed
+after the caller stopped waiting. Malware scanning, size bounds and administrator
+acknowledgement remain enforced.
