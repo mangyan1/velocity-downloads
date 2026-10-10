@@ -87,6 +87,15 @@ Backup operations show activity and successful, partial or failed outcomes.
 
 ## Website operations
 
+The latest evaluation adds a guided **Import website** workflow and a clearer
+**Add site** purpose selector for static HTML, built SPA, WordPress/PHP, Node,
+Python, Ruby, prebuilt Java/.NET, native applications and external HTTP services.
+Imports inspect file placement and installed runtimes, preview native configuration,
+scan archive contents, publish into an empty managed website and verify local HTTP.
+An application process starting alone does not count as a verified website.
+See [the website import guide](website-import.md) and
+[the verification record](import-verification.md) for scope and tested behavior.
+
 Open **Sites → your website**. **Applications & staging** installs a chosen
 WordPress version on a prepared managed PHP/MariaDB website, or copies content
 to a separate prepared destination. Pause writes for a consistent staging copy;
