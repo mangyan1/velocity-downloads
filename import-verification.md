@@ -18,6 +18,14 @@ Core and MariaDB. Static/SPA/PHP and managed Node/Python/Ruby fixtures served
 expected HTTP responses. Prebuilt Java and ASP.NET applications passed with
 runtime-only installations; a .NET SDK is needed only for builds.
 
+The published release was also downloaded through this repository's raw installer
+without GitHub authentication and applied with `--update-console` as a normal
+sudo-capable test user. All 22 signed artifacts verified against the existing
+publisher key. Activation passed and retained four websites, exact file hashes,
+configuration, encryption key, accounts and console access. The new runtime facts,
+import UI and retained Raven application's owned-service HTTP verification passed.
+Both GitHub CI jobs passed for product revision `6ce5181`.
+
 Import smoke served the supplied Raven package as a Node application, including
 its real page and stylesheet, while refusing private source/data paths. Static
 build-directory and PHP public-directory imports also passed. No customer files
