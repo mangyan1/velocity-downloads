@@ -104,6 +104,13 @@ A fresh minimal Ubuntu container installed missing Python/tool packages through
 real APT without keyboard input; visible diagnostics stayed on stderr and stdout
 parsed as the single saved JSON runtime report. The engine/frontend are unchanged.
 
+The published `evaluation-20261010-b26f8ff` installer was then downloaded without
+GitHub authentication and updated an existing disposable installation through
+`--update-console`. Runtime progress was visible, no input was needed after the
+initial update confirmation, activation health passed and all four websites,
+exact file hashes/configuration, key, accounts and console access were retained.
+Both GitHub CI jobs passed for product revision `b26f8ff` (run `38108576671`).
+
 OS package installation and the runtime selection are outside the release
 rollback snapshot. Keep an independent VM/database backup. APT dependency
 resolution can still install additional required packages; `--no-upgrade` avoids
