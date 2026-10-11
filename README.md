@@ -70,6 +70,11 @@ Composer version check could hide a root confirmation while waiting for SSH
 keyboard input; the current probe disables interaction and closes its input.
 See [runtime-check diagnostics](website-runtime-dependencies.md#visible-runtime-checks-and-hidden-prompt-fix).
 
+If an earlier update left `pending: stopping` and stopped services, use the
+[interrupted-update recovery guide](update-recovery.md). The installer now
+recovers before listener preflight, then stops so you can inspect status and
+websites before retrying the update.
+
 To check the result:
 
 ```bash
