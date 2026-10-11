@@ -71,6 +71,56 @@ HTML hosting. Suitable checks are `/` containing `Raven` and `/styles.css` retur
 private helpers and data directory must remain inaccessible to visitors. The
 Docker smoke exercises the supplied archive in private ignored test artifacts.
 
+### Missing application files and HTTP 502
+
+Saving a proxy route or uploading a ZIP through Files does not create a running
+application. On a fresh managed site, complete **Import website**, including
+wrapper removal, publication and deployment. For already uploaded files, set
+the exact relative entrypoint, then use **Applications & staging → Managed
+application → Deploy**. Raven runs directly from `server.js`; Build is not
+required and is a separate project-build action.
+
+`No such file or directory` during Deploy can mean the entrypoint is missing.
+An npm Build error naming a missing root `package.json` confirms that the
+expected manifest is absent there. Locate files without printing their contents:
+
+```bash
+sudo ls -la /srv/velocity-sites/example.test
+sudo find /srv/velocity-sites/example.test -maxdepth 4 -type f -name server.js
+sudo find /srv/velocity-sites/example.test -maxdepth 4 -type f -name package.json
+```
+
+Replace `example.test` with your hostname. A nested `panel/server.js` requires
+that relative entrypoint or a fresh import with wrapper removal. A ZIP alone has
+not been published as an application. Existing content is protected from import
+replacement; inspect it or use a separate staging site rather than overwriting.
+HTTP 502 with `upstream connection failed` means the request reached Velocity
+but its application connection failed. Inspect managed service status/logs and
+ensure the application port matches the proxy upstream port.
+
+### Access from another machine
+
+Local HTTP checks do not prove visitor access. Website listeners on `127.0.0.1`
+or `::1` accept requests only from the VM itself. For LAN testing, use **Sites →
+website → Settings → Ports & protocols → Configure site listener**, select the
+VM's assigned LAN interface address and port, then review and apply. Keep the
+managed application's upstream on loopback. Shared listeners are managed in
+main Settings; wildcards require direct mode and explicit exposure consent.
+Permit required traffic for the intended clients in the host/network firewall.
+
+The testing workstation's hostname resolution must point to the VM too. A local
+hosts-file/LAN DNS override avoids changing public DNS for a private test. To
+test without changing DNS, substitute your hostname, VM address and port:
+
+```bash
+curl --resolve example.test:8083:192.168.1.50 http://example.test:8083/
+```
+
+This preserves hostname routing; using only the IP URL can select another site.
+Verify the page and its assets through the visitor-facing listener as well as
+the application. A connection refusal, DNS mismatch and HTTP 502 need different
+diagnostic steps.
+
 ## Already uploaded folders
 
 Choose **Files already uploaded** after uploading an extracted folder through
