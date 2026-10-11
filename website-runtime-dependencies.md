@@ -5,6 +5,11 @@ reporting success. Fresh installations default to **all**. The public wizard
 offers **static** or a comma-separated selection for smaller servers. Uploading
 files does not choose a runtime, configure a database, or deploy an application.
 
+**Import website** observes installed runtime versions, detects supported package
+recipes, reviews their configuration and verifies deployment. See the
+[upload-to-live guide](website-import.md). Those actions remain explicit; uploading
+files alone never executes project code or installs project dependencies.
+
 | Profile | Installed dependencies |
 | --- | --- |
 | `php` | Distribution-default PHP-FPM and CLI; MySQL, curl, GD, mbstring, XML, ZIP, intl, bcmath and SQLite extensions; Composer |
@@ -67,6 +72,37 @@ before runtime package changes. Existing PHP versions and application databases
 are preserved. The report records selected profiles, package versions and
 verified executable versions. Missing packages, repository candidates, PHP
 extensions or runtime checks fail the installation instead of claiming success.
+
+## Visible runtime checks and hidden-prompt fix
+
+After `website runtimes: installing missing selected dependencies and verifying`,
+the installer now prints each check and completion time to stderr so SSH can show
+progress while stdout remains the machine-readable runtime report. Packages
+already installed skip APT; missing packages show repository/install output.
+
+The previous Composer version probe inherited terminal input while capturing its
+output. On a normal root/sudo VM, Composer could hide its root confirmation in
+that captured output and wait until Enter was pressed. Docker normally bypasses
+that confirmation, so the earlier installation smoke did not detect it. A PTY
+reproduction using Composer's normal VM root-check branch reproduced the wait.
+The current probes close stdin, run outside project directories, and Composer
+uses `--no-interaction --no-plugins --no-scripts --version`. Version stdout is
+kept separate from warnings. Probes fail with a named timeout after 30 seconds;
+MariaDB startup/socket checks have separate 90/10-second limits.
+
+APT also receives closed stdin and noninteractive settings, preserves existing
+configuration files, and lists needrestart findings instead of asking for input.
+Network requests use bounded connect/read settings. Package installation is not
+killed by an overall timer during a dpkg transaction; downloads and package
+configuration can take several minutes. If a check fails, the update stops before
+engine promotion. Diagnose the printed phase rather than repeatedly pressing keys.
+
+Verification for this fix: 59 packaging tests passed, including inherited-PTY
+input refusal, timeout diagnostics and warning/version separation. The real
+Composer VM-style root check and PHP/FPM/extensions passed in disposable Docker.
+A fresh minimal Ubuntu container installed missing Python/tool packages through
+real APT without keyboard input; visible diagnostics stayed on stderr and stdout
+parsed as the single saved JSON runtime report. The engine/frontend are unchanged.
 
 OS package installation and the runtime selection are outside the release
 rollback snapshot. Keep an independent VM/database backup. APT dependency

@@ -65,6 +65,11 @@ After updating, refresh the console with Ctrl+Shift+R. For every existing PHP,
 WordPress or Laravel website, run **Prepare website resources** once to regenerate
 its pool unit with the shared-socket directory preservation fix. Check each website.
 
+The runtime-check phase now shows progress and bounded version checks. A previous
+Composer version check could hide a root confirmation while waiting for SSH
+keyboard input; the current probe disables interaction and closes its input.
+See [runtime-check diagnostics](website-runtime-dependencies.md#visible-runtime-checks-and-hidden-prompt-fix).
+
 To check the result:
 
 ```bash
