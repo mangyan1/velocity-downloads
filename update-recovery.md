@@ -53,3 +53,10 @@ reproduced the exact old error with `pending: stopping` and stopped services. Th
 fixed installer recovered before preflight without a completed backup; all four
 test websites served correctly afterward, retaining exact content/configuration,
 accounts, master key and console access. The engine/frontend are unchanged.
+
+The published `evaluation-20261010-d58409f` release passed frontend and backend
+CI for revision `d58409f`. A normal-user anonymous download verified all 22
+signed artifacts, recovered the interrupted installation, and stopped for
+review. Retrying the public curl/Python update command then activated the release
+with `health_verified: true` and `pending: null`. All four websites, retained
+account/configuration/file/key/console state and all seven runtime profiles passed.
