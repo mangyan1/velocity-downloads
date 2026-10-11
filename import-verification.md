@@ -85,3 +85,9 @@ Both exact-revision GitHub CI jobs passed in run `38118168589`, including 672
 Rust workspace tests, all-target Clippy with warnings denied, 65 packaging tests
 and the frontend checks. The published signed bundle contains 22 verified
 artifacts; all 24 public asset sizes and SHA-256 digests matched the staged bundle.
+
+The published anonymous curl/Python `--update-console` command was also tested as
+a normal sudo-capable Docker user in an interactive terminal, without GitHub
+credentials. It completed at `2026-10-11T06:41:04.783392Z` with verified health and
+no pending update. Exact website/recovery content, configuration, key, accounts
+and console access were retained; 13 working sites served HTTP afterward.
