@@ -61,6 +61,37 @@ still deploy with the installed runtime.
 
 ## Example: Raven CMS
 
+### ZIP stored alongside cache or recoverable trash
+
+A root containing only a ZIP plus `.npm` and `.velocity-trash` has not been
+published. A failed npm Build can create `.npm` before it reports a missing
+`package.json`. Both directories count as existing content, so archive publication
+refuses them rather than deleting their contents.
+
+For this exact layout on an undeployed site, an administrator can preserve both
+directories outside the website before importing. Substitute the managed hostname
+and run this as one command. It checks the resolved site path and refuses symbolic
+links for the two directories. The printed recovery directory is root-private;
+recoverable trash remains there and is no longer available in the site's Trash UI.
+Do not remove it until its contents have been reviewed.
+
+```bash
+sudo bash -c 'set -eu; site=/srv/velocity-sites/example.test; test "$(realpath -- "$site")" = "$site"; test -d "$site/.npm"; test ! -L "$site/.npm"; test -d "$site/.velocity-trash"; test ! -L "$site/.velocity-trash"; backup=$(mktemp -d /var/lib/velocity-import-recovery.XXXXXX); mv -- "$site/.npm" "$site/.velocity-trash" "$backup/"; printf "Preserved cache and trash at: %s\n" "$backup"'
+```
+
+Then select **Import website → Use an archive already in Files**, enter
+`panel-web.zip`, keep enclosing-folder removal enabled, inspect, review the Node
+configuration and **Publish and verify website**. Do not upload another archive
+copy. This workflow scans the contents before publication and deploys Raven
+without a Build action. Other existing website files still block publication;
+use a staging site for an existing application.
+
+The disposable Docker reproduction exercised the failed Build, publication
+refusal, preservation of a trash sentinel, scanned import and verified Node
+deployment. Visitor-facing checks returned HTTP 200 for `/` and `/styles.css`
+and HTTP 404 for `/server.js` and `/data/site.json`. This is Docker evidence;
+recovery of a separate test VM must still be verified there.
+
 For a package with `panel/server.js`, `panel/package.json`, `panel/public/` and
 `panel/data/`, remove the enclosing `panel` folder. Inspection should identify
 **Node application**, `server.js`, and Node `>=18`.
