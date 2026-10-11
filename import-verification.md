@@ -45,6 +45,43 @@ then passed HTTP 200 without another upload.
 
 Read [the import guide](website-import.md) before using this flow. Local HTTP
 verification does not verify public DNS or TLS. Imports require an empty managed
-site; existing websites need a separate staging hostname. Project dependency
+site; cache/trash can be preserved automatically, while existing website content
+needs a separate staging hostname. Project dependency
 installation, immutable application generations/automatic rollback, Git deployment,
 WordPress staged updates, backup schedules and tenant quotas remain later work.
+
+## Automatic archive import follow-up — 2026-10-11
+
+Product revision `6b400db` adds automatic private inspection after a single
+archive upload in Files, a protected source filename, an existing-archive import
+button and automatic preservation of npm cache/recoverable trash. Publication
+retains the entire previous root in root-owned `0700` recovery storage and sets
+the published website's ownership and permissions. Existing application content
+is still refused; source archives remain private if inspection fails.
+
+Local validation passed 72 root helper tests, 65 packaging tests and 19 frontend
+tests, helper Clippy/formatting, Svelte type checks and a production frontend
+build. The supplied Raven package passed Docker Node serving, page/stylesheet
+checks, private-path refusal, failed-Build cache/trash preservation, file `0640`
+and directory `2750` permissions, and interrupted-publication recovery. Static/PHP
+imports, scanner outage, unsafe archives, existing data, roles and unhealthy
+application checks passed.
+
+Firefox verified upload-to-inspection-to-publication at 1440/390/320, with one
+upload progress bar, no horizontal overflow and zero positive-flow console/page
+errors. Store-only uploads, authorization before extracting an existing archive,
+preview cancellation and existing-site refusal were exercised separately.
+Screenshots were inspected. The signed candidate installer retained exact
+website/recovery files, configuration, key, accounts and console access; 13
+working websites still served HTTP after activation.
+
+The initial broad helper run was repeated sequentially after resolving disposable
+fixture conditions: Docker's default shared-memory mount was too small for the
+unchanged 64 MiB storage reserve, and scanner-outage testing overlapped a trash
+restore. With a 256 MiB mount and ready scanner, all 72 checks passed. No storage
+reserve or scanner safeguard was weakened.
+
+Both exact-revision GitHub CI jobs passed in run `38118168589`, including 672
+Rust workspace tests, all-target Clippy with warnings denied, 65 packaging tests
+and the frontend checks. The published signed bundle contains 22 verified
+artifacts; all 24 public asset sizes and SHA-256 digests matched the staged bundle.

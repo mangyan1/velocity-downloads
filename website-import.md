@@ -16,8 +16,9 @@ separate work. LiteSpeed performance parity is still unproven.
 
 Create a managed website with a document root under `/srv/velocity-sites/HOST`.
 Use a new staging hostname for an existing website. An archive publication
-requires a site containing only the selected archive and no running application.
-It refuses to overwrite an existing site's files or data.
+requires the selected archive at the root and no running application. Cache
+and recoverable trash directories are preserved automatically; other existing
+website files or data require a separate staging site.
 
 An administrator performs imports and configuration changes. Operators can inspect
 already uploaded files; viewers can read runtime facts and request HTTP checks.
@@ -59,38 +60,41 @@ commands automatically. Use **Applications & staging** for explicitly requested
 builds; the .NET Build button is disabled if its SDK is absent. A prebuilt DLL can
 still deploy with the installed runtime.
 
+## Automatic extraction and permissions
+
+In **Files**, selecting a single ZIP, tar, tar.gz or tgz at the website root
+defaults to **Import website after upload** and a protected `.website-import`
+archive filename so visitors cannot download the source during inspection.
+Acknowledge application-file access
+and select **Upload and inspect website**. After the confirmed scan/save response,
+the dialog closes and Import automatically extracts into private staging, scans
+each file, removes a single enclosing folder by default and detects the website
+recipe. Review the configuration, then **Publish and verify website**. Publication
+sets the website account as owner, files to `0640` and directories to `2750`;
+managed applications start as that account and must pass HTTP checks.
+
+Uncheck the import option to store an archive without extracting it. Multiple-file
+or nested-directory uploads remain file uploads. An archive already at the root
+has an **Import website** button in Files, which selects its path without uploading
+another copy. Inspection still requires application-file authorization, and
+starting application code still requires the reviewed publication action.
+
+An undeployed root containing the selected archive plus `.npm` and
+`.velocity-trash` can now import without manual cleanup. The entire previous root
+is retained at `/srv/velocity-sites/.velocity-import-backup-OPERATION`, including
+the original archive, cache, recoverable trash and any concurrent writes. The
+recovery directory is root-owned with mode `0700`, outside the website's served
+root. Import displays its location. Trash retained there is available for
+administrator recovery rather than through the new site's Trash UI.
+
+Recovery copies are not automatically deleted. They use storage outside the
+published site's console budget; administrators should review and manage their
+retention. An interrupted promotion reconciles its receipt, protects the previous
+root and completes the ownership handoff on retry/status. Other website files,
+links and special objects still prevent publication; use a separate staging site
+for an existing application. Increasing upload limits does not bypass scanning.
+
 ## Example: Raven CMS
-
-### ZIP stored alongside cache or recoverable trash
-
-A root containing only a ZIP plus `.npm` and `.velocity-trash` has not been
-published. A failed npm Build can create `.npm` before it reports a missing
-`package.json`. Both directories count as existing content, so archive publication
-refuses them rather than deleting their contents.
-
-For this exact layout on an undeployed site, an administrator can preserve both
-directories outside the website before importing. Substitute the managed hostname
-and run this as one command. It checks the resolved site path and refuses symbolic
-links for the two directories. The printed recovery directory is root-private;
-recoverable trash remains there and is no longer available in the site's Trash UI.
-Do not remove it until its contents have been reviewed.
-
-```bash
-sudo bash -c 'set -eu; site=/srv/velocity-sites/example.test; test "$(realpath -- "$site")" = "$site"; test -d "$site/.npm"; test ! -L "$site/.npm"; test -d "$site/.velocity-trash"; test ! -L "$site/.velocity-trash"; backup=$(mktemp -d /var/lib/velocity-import-recovery.XXXXXX); mv -- "$site/.npm" "$site/.velocity-trash" "$backup/"; printf "Preserved cache and trash at: %s\n" "$backup"'
-```
-
-Then select **Import website → Use an archive already in Files**, enter
-`panel-web.zip`, keep enclosing-folder removal enabled, inspect, review the Node
-configuration and **Publish and verify website**. Do not upload another archive
-copy. This workflow scans the contents before publication and deploys Raven
-without a Build action. Other existing website files still block publication;
-use a staging site for an existing application.
-
-The disposable Docker reproduction exercised the failed Build, publication
-refusal, preservation of a trash sentinel, scanned import and verified Node
-deployment. Visitor-facing checks returned HTTP 200 for `/` and `/styles.css`
-and HTTP 404 for `/server.js` and `/data/site.json`. This is Docker evidence;
-recovery of a separate test VM must still be verified there.
 
 For a package with `panel/server.js`, `panel/package.json`, `panel/public/` and
 `panel/data/`, remove the enclosing `panel` folder. Inspection should identify
@@ -191,7 +195,7 @@ because a later application check fails.
 
 Publication retries use the root-owned receipt from the atomic exchange; a helper
 restart can reconcile that receipt to the saved report and remove the obsolete
-archive/staging copy. A preview expires for publication after one hour. Inspect
+private staging copy while retaining the previous root in recovery storage. A preview expires for publication after one hour. Inspect
 again or discard it. Discarding deletes the private preview; the uploaded archive
 remains in Files. One preview is retained per site, and a failed replacement
 inspection preserves the previous preview/report.

@@ -101,7 +101,10 @@ The latest evaluation adds a guided **Import website** workflow and a clearer
 **Add site** purpose selector for static HTML, built SPA, WordPress/PHP, Node,
 Python, Ruby, prebuilt Java/.NET, native applications and external HTTP services.
 Imports inspect file placement and installed runtimes, preview native configuration,
-scan archive contents, publish into an empty managed website and verify local HTTP.
+scan archive contents, publish into a fresh managed website and verify local HTTP.
+Single root archives uploaded in Files default to automatic private extraction
+and inspection. Ownership and permissions are set during reviewed publication;
+cache/trash are preserved in a protected recovery copy.
 An application process starting alone does not count as a verified website.
 See [the website import guide](website-import.md) and
 [the verification record](import-verification.md) for scope and tested behavior.
@@ -375,12 +378,17 @@ GitHub login is required on the VM.
 
 ## Upload diagnostics and ZIP deployment
 
-ZIP uploads store the archive; they do not automatically extract or deploy it.
-ZIP extraction is not implemented in the console. Extract on your device, then
-use **Choose folder** for the website contents. A Node CMS requires an installed
-Node runtime (installed by default) and a managed Node reverse-proxy website with the correct entrypoint;
-serving only the uploaded ZIP as a static website does not start the application.
-The upload dialog displays this distinction when selecting a ZIP.
+Select one ZIP at the website root in **Files** and keep **Import website after
+upload** checked. **Upload and inspect website** scans and extracts privately,
+then opens the detected website configuration. Review it and select **Publish
+and verify website** to set ownership/permissions and start the managed app.
+For an archive already uploaded, use its **Import website** button. Cache and
+recoverable trash no longer need manual cleanup; the previous root is retained
+in protected recovery storage. Existing website content still requires staging.
+
+Uncheck the import option to store an archive, or extract locally and use
+**Choose folder**. A Node CMS needs a managed Node application with the correct
+entrypoint; static hosting of its ZIP alone cannot start the application.
 
 Failed uploads show a **Diagnostic ID**, byte counts and elapsed seconds. The
 control plane and helper record the same ID and processing phase. The helper logs
